@@ -1,0 +1,5 @@
+projectIdea.md
+venv/
+*.pyc
+__pycache__/
+
