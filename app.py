@@ -1,11 +1,10 @@
-import database.db as db
+from database.db import Database
+from ui.register import register_screen
+from ui.login import login_screen
+
 
 def main():
     pass
 
 if __name__ == "__main__":
-    db.create_db()
-    db.add_user('Anderson s.', '1234')
-    db.autenticate_user('Anderson S.', '1234')
     main()
-
