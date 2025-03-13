@@ -2,4 +2,5 @@ projectIdea.md
 venv/
 *.pyc
 __pycache__/
+*.db
 
