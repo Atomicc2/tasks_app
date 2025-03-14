@@ -30,9 +30,11 @@ def register_screen(database):
             #Condição para verificar se o nome de usuário já existe, caso exista, da erro
             if res:
                 messagebox.showerror('ERRO', 'This username already exists!')
+                return False
             else:
                 database.add_user(username, password)
                 messagebox.showinfo('Success', 'User registered!')
+                return True
         else:
             messagebox.showerror('Error', 'Fill all fields')
 

@@ -75,5 +75,48 @@ class Database:
         self.close_db(con)
         return user is not None
 
+    #Adiciona umas nova tarefa
+    def add_tasks(self, task):
+        con, cursor = self.connect_db()
+        try:
+            cursor.execute('INSERT INTO tasks (task) VALUES (?)', (task,))
+            self.close_db(con)
+            return True
+        except sql.DatabaseError as error:
+            self.close_db(con)
+            return False
+            raise error
 
 
+    #Lista todas as tarefas 
+    def list_tasks(self):
+        con, cursor = self.connect_db()
+        cursor.execute('SELECT task FROM tasks')
+        res = cursor.fetchall()
+        self.close_db(con)
+        return res if res else False
+
+    #Atualiza o status de uma task para concluida
+    def set_status_complete(self, task_id):
+        con, cursor = self.connect_db()
+        try:
+            cursor.execute('''
+            UPDATE tasks
+            SET status = 'Complete'
+            WHERE id = ?
+        ''',
+            (task_id,))
+            self.close_db(con)
+        except sql.DatabaseError as error:
+            self.close_db(con)
+            raise error
+        
+    #Apaga uma task da lista de tasks
+    def del_tasks(self, task_id):
+        con, cursor = self.connect_db()
+        try:
+            cursor.execute('DELETE FROM tasks WHERE id = ?', (task_id,))
+            self.close_db(con)
+        except sql.DatabaseError as error:
+            self.close_db(con)
+            raise error

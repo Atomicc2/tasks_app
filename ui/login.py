@@ -27,6 +27,7 @@ def login_screen(database):
         res = database.authenticate_user(username, password)
         if res:
             messagebox.showinfo('Success', f'Welcome, {username}!')
+            return True
         else:
             messagebox.showerror('Erro', f'Username or Password incorrect!')
 
