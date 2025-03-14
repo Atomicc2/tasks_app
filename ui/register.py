@@ -19,10 +19,13 @@ def register_screen(database):
     password_entry = tk.Entry(window, show='*')
     password_entry.pack()
 
+    result = {'Success': False}
+    user = {'Username': ''}
+
     #Função que realiza o cadastro no banco de dados
     def register_user():
-        username = username_entry.get()
-        password = password_entry.get()
+        username = username_entry.get().strip()
+        password = password_entry.get().strip()
 
         #Confirma que os dois campos sejam preenchidos
         if username and password:
@@ -30,14 +33,16 @@ def register_screen(database):
             #Condição para verificar se o nome de usuário já existe, caso exista, da erro
             if res:
                 messagebox.showerror('ERRO', 'This username already exists!')
-                return False
             else:
                 database.add_user(username, password)
                 messagebox.showinfo('Success', 'User registered!')
-                return True
+                result['Success'] = True
+                user['Username'] = username
+                window.destroy()
         else:
             messagebox.showerror('Error', 'Fill all fields')
 
     #Cria o botão para fazer o registro chamando a função register_user  
     tk.Button(window, text='Register', command=register_user).pack()
     window.mainloop()
+    return result['Success'], user['Username']

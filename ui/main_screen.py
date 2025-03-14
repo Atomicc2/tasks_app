@@ -14,15 +14,16 @@ def main_screen(db):
     #Acão caso a forma de entrar escolhida seja o login
     def login_action():
         window.destroy()
-        if login_screen(db):
-            window.destroy()
-            tasks_screen(db)
+        res, username = login_screen(db)
+        if res:
+            tasks_screen(db, username)
 
     #Ação caso a forma de entrar escolhida seja o registro
-    def register_action(db):
+    def register_action():
         window.destroy()
-        if register_screen(db):
-            tasks_screen(db)
+        res, username = register_screen(db)
+        if res:
+            tasks_screen(db, username)
 
     tk.Button(window, text='Login', command=login_action).pack()
     tk.Button(window, text='Register', command=register_action).pack()

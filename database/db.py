@@ -18,6 +18,16 @@ class Database:
         con.commit()
         con.close()
 
+    #Função para requisitar o id de algum usuário
+    def get_user_id(self, username):
+        con, cursor = self.connect_db()
+
+        cursor.execute('SELECT id FROM users WHERE username = ?', (username,))
+        res = cursor.fetchone()
+
+        self.close_db(con)
+        return res[0] if res else None    
+
     #Função para criar o banco de dados e as tabelas nele contidas
     def create_db(self):
         con, cursor = self.connect_db()
@@ -50,9 +60,9 @@ class Database:
 
         try:
             cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
-            self.close_db()
+            self.close_db(con)
         except sql.DatabaseError as error:
-            self.close_db()
+            self.close_db(con)
             raise error
         
     #Checa se o username já existe
@@ -76,47 +86,57 @@ class Database:
         return user is not None
 
     #Adiciona umas nova tarefa
-    def add_tasks(self, task):
+    def add_tasks(self, task, username):
         con, cursor = self.connect_db()
+        id = self.get_user_id(username)
+
         try:
-            cursor.execute('INSERT INTO tasks (task) VALUES (?)', (task,))
+            cursor.execute('INSERT INTO tasks (task, user_id) VALUES (?, ?)', (task, id))
             self.close_db(con)
             return True
-        except sql.DatabaseError as error:
+        except sql.DatabaseError:
             self.close_db(con)
             return False
-            raise error
-
 
     #Lista todas as tarefas 
-    def list_tasks(self):
+    def list_tasks(self, username):
         con, cursor = self.connect_db()
-        cursor.execute('SELECT task FROM tasks')
+        id = self.get_user_id(username)
+        
+        cursor.execute('SELECT task FROM tasks WHERE user_id = ?', (id,))
         res = cursor.fetchall()
+
         self.close_db(con)
         return res if res else False
 
     #Atualiza o status de uma task para concluida
-    def set_status_complete(self, task_id):
+    def set_status_complete(self, task, username):
         con, cursor = self.connect_db()
+        user_id = self.get_user_id(username)
+
         try:
             cursor.execute('''
             UPDATE tasks
             SET status = 'Complete'
-            WHERE id = ?
+            WHERE task = ?
+            AND user_id = ?
         ''',
-            (task_id,))
+            (task, user_id))
             self.close_db(con)
-        except sql.DatabaseError as error:
+            return True
+        except sql.DatabaseError:
             self.close_db(con)
-            raise error
+            return False
         
     #Apaga uma task da lista de tasks
-    def del_tasks(self, task_id):
+    def del_tasks(self, task, username):
         con, cursor = self.connect_db()
+        user_id = self.get_user_id(username)
+
         try:
-            cursor.execute('DELETE FROM tasks WHERE id = ?', (task_id,))
+            cursor.execute('DELETE FROM tasks WHERE task = ? and user_id = ?', (task, user_id))
             self.close_db(con)
-        except sql.DatabaseError as error:
+            return True
+        except sql.DatabaseError:
             self.close_db(con)
-            raise error
+            return False

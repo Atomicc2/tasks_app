@@ -19,18 +19,24 @@ def login_screen(database):
     password_entry = tk.Entry(window, show='*')
     password_entry.pack()
 
+    result = {'Success': False}
+    user = {'Username': ''}
+
     #Confere se o usuário existe realmente
     def login_user():
-        username = username_entry.get()
-        password = password_entry.get()
+        username = username_entry.get().strip()
+        password = password_entry.get().strip()
 
         res = database.authenticate_user(username, password)
         if res:
             messagebox.showinfo('Success', f'Welcome, {username}!')
-            return True
+            result['Success'] = True
+            user['Username'] = username
+            window.destroy()
         else:
             messagebox.showerror('Erro', f'Username or Password incorrect!')
 
     #Cria o botão de faz o login e executa a função de login_user
     tk.Button(window, text='Login', command=login_user).pack()
     window.mainloop()
+    return result['Success'], user['Username']
